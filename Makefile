@@ -1,11 +1,12 @@
 FILES=$(shell find ./ -name '*.coffee' 2> /dev/null)
 STATIC=public/ views/
+STATIC+=blah/views/ blah/public/ blah/app.js
 OBJECTS=$(addprefix build/, $(subst .coffee,.js,$(FILES)))
 # TODO(sissel): put versions in the DEPS string
-DEPS=express socket.io jade coffee-script
+DEPS=express socket.io jade coffee-script sass
 DEPS_OBJECTS=$(addprefix build/node_modules/, $(DEPS))
 
-STATIC_FILES=$(shell find $(STATIC) -type f 2> /dev/null | egrep '\.(css|js|jade|jpg)$$')
+STATIC_FILES=$(shell find $(STATIC) -type f 2> /dev/null | egrep '\.(css|js|jade|jpg|sass)$$')
 STATIC_OBJECTS=$(addprefix build/, $(STATIC_FILES))
 
 COFFEE=./build/node_modules/coffee-script/bin/coffee
@@ -18,6 +19,7 @@ all: compile static
 build/node_modules/express: VERSION=2.4.2
 build/node_modules/jade: VERSION=0.12.4
 build/node_modules/socket.io: VERSION=0.7.7
+build/node_modules/sass: VERSION=0.5.0
 
 clean:
 	rm -f $(OBJECTS)
@@ -33,6 +35,11 @@ build/%.js: %.coffee | build coffee-script
 	$(QUIET)$(COFFEE) -c -o $(shell dirname $@) $<
 
 build/%.css: %.css | build
+	@echo "Copying $< (to $@)"
+	$(QUIET)[ -d $(shell dirname $@) ] || mkdir -p $(shell dirname $@)
+	$(QUIET)cp $< $@
+
+build/%.sass: %.sass | build
 	@echo "Copying $< (to $@)"
 	$(QUIET)[ -d $(shell dirname $@) ] || mkdir -p $(shell dirname $@)
 	$(QUIET)cp $< $@
