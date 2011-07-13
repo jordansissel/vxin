@@ -20,3 +20,11 @@ a pie chart and a data table. The pie data uses log scale to make it easy to
 see the whole data set.
 
 ![example pie chart](https://github.com/jordansissel/vxin/raw/master/media/elasticsearch-logstash-piesnacking.png)
+
+## What?
+
+Example inputs: elasticsearch, websockets, graphite, ganglia, logs, etc
+
+Example filters: mapreduce, etc
+
+Example outputs: pie charts, line graphs, histograms, flow charts, etc
