@@ -19,4 +19,4 @@ An example below is of an elasticsearch term facet query (input) and outputting
 a pie chart and a data table. The pie data uses log scale to make it easy to
 see the whole data set.
 
-![example pie chart](http://semicomplete.com/images/elasticsearch-logstash-piesnacking.png)
+![example pie chart](https://github.com/jordansissel/vxin/raw/master/media/elasticsearch-logstash-piesnacking.png)
