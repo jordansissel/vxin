@@ -25,6 +25,16 @@ see the whole data set.
 
 Example inputs: elasticsearch, websockets, graphite, ganglia, logs, etc
 
-Example filters: mapreduce, "top N", etc
+Example filters: mapreduce, "top N", sort, etc
 
 Example outputs: pie charts, line graphs, histograms, flow charts, etc
+
+Some data comes as an unlimited stream, other is queryable and finite. We can
+achieve "top N" and "sort" filtration on these streams if we are careful.
+
+"top N" could emit the top N elements every N seconds, or be queryable. The
+same goes for sort.  Finite data sets are easier as they can simply emit top N
+or sorted results when we are finished reading all the data.
+
+I'm still looking to target both unbounded/unlimited data streams and also
+manage finite data sets with the same tools.
