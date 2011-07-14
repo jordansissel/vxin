@@ -22,7 +22,11 @@ class LogglyInput
   run: (callback) ->
     url = "https://jls.loggly.com" + @path + "?callback=?"
     #jQuery.getJSON("https://jls.loggly.com" + @path + "?callback=?",
-    #@params, (data, status, xhr) => callback(data, status, xhr))
+                    #@params, (data, status, xhr) => callback(data, status, xhr))
+                    #
+    # We have to use jQuery.ajax (instead of .getJSON) due to a problem with
+    # the way jquery does cache busting causing an error against the loggly
+    # api.
     jQuery.ajax({
       url: url,
       dataType: "jsonp",
@@ -43,16 +47,24 @@ class LogglyInput
     data = []
     scaledata = []
     terms = []
+    result_array = []
     for term, count of results.data
-      # Scale the data with log() so tiny values show up.
-      data.push(count)
-      #scaledata.push(Math.log(count))
-      terms.push(term)
+      console.log(term)
+      result_array.push([term, count])
 
+    result_array.sort((a, b) => a[1] - b[1])
+
+    for kv in result_array
+      terms.push(kv[0])
+      data.push(kv[1])
+      # Scale the data with log() so tiny values show up.
+      #scaledata.push(Math.log(count))
+
+    console.log(data)
     scaledata = data
 
     color = d3.scale.category20()
-    donut = d3.layout.pie().sort(d3.descending)
+    pie = d3.layout.pie().sort(d3.descending)
     #arc = d3.svg.arc().innerRadius(r * .3).outerRadius(r)
     arc = d3.svg.arc().innerRadius(0).outerRadius(r)
 
@@ -66,7 +78,7 @@ class LogglyInput
         .attr("height", h)
 
     arcs = vis.selectAll("g.arc")
-        .data(donut)
+        .data(pie)
       .enter().append("svg:g")
         .attr("class", "arc")
         .attr("transform", "translate(" + r + "," + r + ")")
