@@ -25,6 +25,6 @@ see the whole data set.
 
 Example inputs: elasticsearch, websockets, graphite, ganglia, logs, etc
 
-Example filters: mapreduce, etc
+Example filters: mapreduce, "top N", etc
 
 Example outputs: pie charts, line graphs, histograms, flow charts, etc
