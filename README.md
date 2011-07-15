@@ -46,3 +46,10 @@ or sorted results when we are finished reading all the data.
 
 I'm still looking to target both unbounded/unlimited data streams and also
 manage finite data sets with the same tools.
+
+## Visuals?
+
+### Time-series views
+
+* Graph things literaly in a calendar view. Each day gets some kind of mini graph
+* "Day" view a circular histogram for the full 24 hours. 
