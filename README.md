@@ -21,6 +21,14 @@ see the whole data set.
 
 ![example pie chart](https://github.com/jordansissel/vxin/raw/master/media/elasticsearch-logstash-piesnacking.png)
 
+## Use case example
+
+Ever use Excel? You know how easy it is to make totally arbitrary graphs and pivot tables? I want that.
+
+I want programmable and interactive visuals. I want to be able to take a data
+source and ask "What graphs can I make with this?" and then try pie charts, bar
+charts, all kinds of silly graphs to see how I can get the data to make sense.
+
 ## What?
 
 Example inputs: elasticsearch, websockets, graphite, ganglia, logs, etc
