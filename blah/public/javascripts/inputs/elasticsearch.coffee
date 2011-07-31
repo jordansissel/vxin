@@ -6,7 +6,7 @@ class ElasticSearchInput # extends Input
     console.log("OK")
   # end constructor
 
-  histogram: (settings) ->
+  histogram: (settings, callback) ->
     request = {
       "query" : {
         # TODO(sissel): Include query.
@@ -14,23 +14,29 @@ class ElasticSearchInput # extends Input
       }, # query
       "facets" : {
         "histo1" : {
-          "histogram" : {
-            "field" : settings.field 
-            "interval" : settings.interval
-          } # date_histogram
         } # histo1
       } # facets
     } # request
 
-    return (channels) =>
-      @execute("localhost", 9200, request, (data) => 
-        # elasticsearch histogram gives us
-        @process(data, channels)
-      )
-  # end histogram
-  
-  process: (data, channels) ->
-    # ElaticSearch results can be like this:
+    if settings.interval?
+      type = "histogram"
+      request.facets.histo1 = { 
+        "histogram" : {
+          "field": settings.field,
+          "interval": settings.interval
+        }
+      }
+    else
+      type = "terms"
+      request.facets.histo1 = {
+        "terms": {
+          "field": settings.field
+        }
+      }
+    # end if settings.interval?
+
+
+    # ElasticSearch results can be like this:
     # {
     #   "hits": {
     #     "hits": [ ... ]
@@ -41,9 +47,19 @@ class ElasticSearchInput # extends Input
     #     }
     #   }
     # }
-    console.log(data)
-    channels.data.push(data)
-  # end process
+
+    @execute("localhost", 9200, request, (data) => 
+      console.log("execute data", data)
+      switch (type)
+        when "terms"
+          result = []
+          for entry in data.facets.histo1.terms
+            result.push({ key: entry.term, count: entry.count })
+        when "histogram"
+          result = data.facets.histo1.entries
+      callback(result)
+    )
+  # end histogram
 
   execute: (host, port, request, callback) ->
     jQuery.getJSON("http://" + host + ":" + port + "/_search?callback=?",
@@ -53,20 +69,9 @@ class ElasticSearchInput # extends Input
 # end class ElasticSearchInput
 
 es = new ElasticSearchInput()
-barchart = new BarChart()
+pie = new PieChart()
 
-calls = [
-  es.histogram({ field: "@timestamp", interval: 60 * 60 * 1000 }),
-  barchart.display({})
-]
-
-channels = {
-  data: [],
-  messages: []
-}
-
-for func, i in calls
-  console.log(i)
-  console.log(channels)
-  func(channels)
-
+#es.histogram({ field: "@timestamp", interval: 60 * 60 * 1000 }, (data) =>
+es.histogram({ field: "verb" }, (data) =>
+  pie.receive(data)
+)
