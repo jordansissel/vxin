@@ -14,8 +14,6 @@ class TableChart # extends Output
     # settings.className = "classname"
     #
     # TODO(sissel): What other settings might we want?
-    #
-    #
     # name is the field header
     # value is the field to access; the '_' variable is the object.
     #
@@ -36,10 +34,11 @@ class TableChart # extends Output
       .data(result)
       .enter()
         .append("tr")
-        .html((d) -> 
-          "<td style='font-family:monospace; white-space: pre'>" + d._source["@timestamp"] + "</td>" +
-          "<td>" + d._source["@message"] + "</td>"
-        )
+        .html((d) => @row(d))
+  
+  row: (data) ->
+    return "<td style='font-family:monospace; white-space: pre'>" + data._source["@timestamp"] + "</td>" +
+           "<td>" + data._source["@message"] + "</td>"
   # end display
 # end class PieChart
   
