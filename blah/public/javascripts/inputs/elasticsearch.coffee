@@ -9,8 +9,9 @@ class ElasticSearchInput # extends Input
   histogram: (settings, callback) ->
     request = {
       "query" : {
-        # TODO(sissel): Include query.
-        "match_all" : {}
+        "query_string": {
+          "query": settings.query || "*"
+        }
       }, # query
       "facets" : {
         "histo1" : {
@@ -30,7 +31,7 @@ class ElasticSearchInput # extends Input
         }
       }
     else
-      # Otherwise ask for terms.
+      # Otherwise ask for a terms facet.
       type = "terms"
       request.facets.histo1 = {
         "terms": {
@@ -51,8 +52,9 @@ class ElasticSearchInput # extends Input
     #   }
     # }
 
-    @execute("localhost", 9200, request, (data) => 
-      console.log("execute data", data)
+    @request = request
+    #@execute("localhost", 9200, request, (data) => 
+    @process = (data) => 
       switch (type)
         when "terms"
           result = []
@@ -60,8 +62,7 @@ class ElasticSearchInput # extends Input
             result.push({ key: entry.term, count: entry.count })
         when "histogram"
           result = data.facets.histo1.entries
-      callback(result)
-    )
+      return result
   # end histogram
   
   search: (settings, callback) ->
@@ -79,27 +80,43 @@ class ElasticSearchInput # extends Input
       request.sort = [ settings.sort_by ]
     # end if settings.sort_by?
 
-    @execute("localhost", 9200, request, (data) =>
-      callback(data.hits.hits)
-    )
+    @request = request
+    @process = (data) => callback(data.hits.hits)
+    #@execute("localhost", 9200, request, (data) =>
+      #callback(data.hits.hits)
+    #)
   # end search
 
+  run: (callback) -> 
+    if @cached_result?
+      callback(@cached_result)
+      return
+    
+    @execute("localhost", 9200, @request, (data) =>
+      #console.log("es run result:", data.hits.hits)
+      @cached_result = @process(data)
+      callback(@cached_result)
+    )
+  # end run
+
   execute: (host, port, request, callback) ->
-    console.log("RequesT", request)
+    console.log("Elasticsearch Request:", request)
     jQuery.getJSON("http://" + host + ":" + port + "/_search?callback=?",
                    { "source": JSON.stringify(request) },
                    (data, status, xhr) => callback(data, status, xhr))
   # end execute
 # end class ElasticSearchInput
 
-es = new ElasticSearchInput()
+#es = new ElasticSearchInput()
 #pie = new PieChart()
-table = new TableChart()
+#table = new TableChart()
 
 #es.histogram({ field: "@timestamp", interval: 60 * 60 * 1000 }, (data) =>
 #es.histogram({ field: "clientip" }, (data) =>
   #pie.receive(data)
 #)
-es.search({ query: "*", sort_by: "@timestamp" }, (data) =>
-  table.receive(data)
-)
+#es.search({ query: "*", sort_by: "@timestamp" }, (data) =>
+  #table.receive(data)
+#)
+
+exports = window.ElasticSearchInput = ElasticSearchInput

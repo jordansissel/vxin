@@ -1,6 +1,10 @@
 !!!
 html
   head
-    title= title
-    link(rel='stylesheet', href='/stylesheets/style.css')
+    title #{title} (#{locals.style})
+    - if (typeof locals.style === undefined)
+      link(rel="stylesheet", href="/stylesheets/style.css")
+    - else
+      link(rel="stylesheet", href="/stylesheets/#{locals.style}")
+
   body!= body

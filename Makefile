@@ -16,10 +16,7 @@ QUIET=@
 default: all
 all: compile static
 
-build/node_modules/express: VERSION=2.4.2
-build/node_modules/jade: VERSION=0.12.4
-build/node_modules/socket.io: VERSION=0.7.7
-build/node_modules/sass: VERSION=0.5.0
+build/node_modules/coffee-script: VERSION=1.1.1
 
 clean:
 	rm -f $(OBJECTS)

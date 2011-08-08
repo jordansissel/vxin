@@ -35,5 +35,12 @@ app.get('/', function(req, res){
   });
 });
 
+app.get('/logstash', function(req, res){
+  res.render('logstash', {
+    title: 'logstash',
+    style: 'logstash.css'
+  });
+});
+
 app.listen(3000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);

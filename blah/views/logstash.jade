@@ -1,28 +1,18 @@
-div#visual
 
-div#templates
-  div.piechart
-
-div#foo
-  table
-    caption
-    tr
-      td.chart
-      td.table
-        table
-          tr
-            th Name
-            th Value
-          tr.template
-            td ${name}
-            td ${value}
+div#header
+  form.search(method="get", action="#")
+    label(for="textinput") Input:
+    input#textinput(type="text", name="query")
+  .logo logstash
+div#content
 
 script(src="/javascripts/jquery-1.6.2.min.js")
 script(src="/javascripts/jquery.tmpl.min.js")
 script(src="/javascripts/jsonpath-0.8.0.js")
 script(src="/javascripts/d3/d3.js")
 script(src="/javascripts/d3/d3.layout.js")
+script(src="/javascripts/inputs/elasticsearch.js")
 script(src="/javascripts/outputs/bar.js")
 script(src="/javascripts/outputs/pie.js")
 script(src="/javascripts/outputs/table.js")
-script(src="/javascripts/inputs/elasticsearch.js")
+script(src="/javascripts/widget.js")
