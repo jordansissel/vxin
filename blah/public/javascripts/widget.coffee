@@ -28,10 +28,9 @@ class Widget
 wtable = new Widget()
 wpie = new Widget()
 input = new ElasticSearchInput()
-search = new ElasticSearchInput({
-
-})
-search.search({ 
+#search = new ElasticSearchInput({
+#})
+#search.search({ 
   #query: "@type:apache",
   #sort_by: "@timestamp"
 #})
