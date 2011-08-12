@@ -1,6 +1,5 @@
 FILES=$(shell find ./ -name '*.coffee' 2> /dev/null)
-STATIC=public/ views/
-STATIC+=blah/views/ blah/public/ blah/app.js
+STATIC+=views/ public/ app.js
 OBJECTS=$(addprefix build/, $(subst .coffee,.js,$(FILES)))
 # TODO(sissel): put versions in the DEPS string
 DEPS=express socket.io jade coffee-script sass
