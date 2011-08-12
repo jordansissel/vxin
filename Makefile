@@ -19,7 +19,9 @@ all: compile static
 build/node_modules/coffee-script: VERSION=1.1.1
 
 clean:
-	rm -f $(OBJECTS)
+	rm -f $(OBJECTS) $(STATIC_OBJECTS)
+
+superclean:
 	rm -fr build/
 
 coffee-script: build/node_modules/coffee-script
