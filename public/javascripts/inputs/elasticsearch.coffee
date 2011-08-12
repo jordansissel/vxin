@@ -3,7 +3,7 @@ class ElasticSearchInput # extends Input
   @commands = [ "histogram" ]
 
   constructor: () ->
-    console.log("OK")
+    #console.log("OK")
   # end constructor
 
   histogram: (settings, callback) ->
@@ -65,7 +65,7 @@ class ElasticSearchInput # extends Input
       return result
   # end histogram
   
-  search: (settings, callback) ->
+  search: (settings) ->
     request = {
       "size": settings.size || 50,
       "from": settings.from || 0,
@@ -81,10 +81,7 @@ class ElasticSearchInput # extends Input
     # end if settings.sort_by?
 
     @request = request
-    @process = (data) => callback(data.hits.hits)
-    #@execute("localhost", 9200, request, (data) =>
-      #callback(data.hits.hits)
-    #)
+    @process = (data) => data.hits.hits
   # end search
 
   run: (callback) -> 
@@ -93,14 +90,13 @@ class ElasticSearchInput # extends Input
       return
     
     @execute("localhost", 9200, @request, (data) =>
-      #console.log("es run result:", data.hits.hits)
       @cached_result = @process(data)
       callback(@cached_result)
     )
   # end run
 
   execute: (host, port, request, callback) ->
-    console.log("Elasticsearch Request:", request)
+    #console.log("Elasticsearch Request:", request)
     jQuery.getJSON("http://" + host + ":" + port + "/_search?callback=?",
                    { "source": JSON.stringify(request) },
                    (data, status, xhr) => callback(data, status, xhr))

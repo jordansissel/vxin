@@ -78,3 +78,18 @@ build/node_modules/%: | build/node_modules
 
 deps: $(DEPS_OBJECTS)
 
+build/vxin-loggly-full.js: compile
+	cat \
+	build/public/javascripts/d3/d3.js \
+	build/public/javascripts/d3/d3.geom.js \
+	build/public/javascripts/d3/d3.behavior.js \
+	build/public/javascripts/d3/d3.layout.js \
+	build/public/javascripts/d3/d3.csv.js \
+	build/public/javascripts/d3/d3.time.js \
+	build/public/javascripts/d3/d3.chart.js \
+	build/public/javascripts/d3/d3.geo.js \
+	build/public/javascripts/inputs/*.js \
+	build/public/javascripts/outputs/*.js \
+	build/public/javascripts/widget.js \
+	build/public/javascripts/vxin-loggly.js \
+	> $@

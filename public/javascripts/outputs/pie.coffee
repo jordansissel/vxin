@@ -2,7 +2,8 @@ class PieChart # extends Output
   @name = [ "pie" ]
 
   constructor: (settings) ->
-    @height = @width = 200
+    settings ?= {}
+    @height = @width = settings.size ? 200
     @radius = @width / 2
   # end constructor
 
@@ -13,9 +14,9 @@ class PieChart # extends Output
     terms = []
     result_array = []
 
-    console.log("pie data", results)
+    #console.log("pie data", results)
     for point in results
-      console.log("point", point.key, point.count)
+      #console.log("point", point.key, point.count)
       result_array.push([point.key, point.count])
 
     #result_array.sort((a, b) => a[1] - b[1])
@@ -24,7 +25,7 @@ class PieChart # extends Output
       terms.push(kv[0])
       data.push(kv[1])
       # TODO(sissel): ??? Scale the data with log() so tiny values show up.
-      console.log("point", point.key, point.count)
+      #console.log("point", point.key, point.count)
 
     color = d3.scale.category20()
     pie = d3.layout.pie().sort(d3.descending)
