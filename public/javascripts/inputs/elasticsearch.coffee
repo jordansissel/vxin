@@ -53,7 +53,6 @@ class ElasticSearchInput # extends Input
     # }
 
     @request = request
-    #@execute("localhost", 9200, request, (data) => 
     @process = (data) => 
       switch (type)
         when "terms"
@@ -89,30 +88,25 @@ class ElasticSearchInput # extends Input
       callback(@cached_result)
       return
     
-    @execute("localhost", 9200, @request, (data) =>
+    @execute(@request, (data) =>
       @cached_result = @process(data)
       callback(@cached_result)
     )
   # end run
 
-  execute: (host, port, request, callback) ->
+  execute: (request, callback) ->
     #console.log("Elasticsearch Request:", request)
-    jQuery.getJSON("http://" + host + ":" + port + "/_search?callback=?",
-                   { "source": JSON.stringify(request) },
-                   (data, status, xhr) => callback(data, status, xhr))
+    # For elasticsearch REST/JSON API to work well, we need a same-server
+    # handler that proxies to elasticsearch. Otherwise we have to use <script>
+    # or other lame hacks and we don't get nice error reporting.
+    # TODO(sissel): Make the path tunable; allow folks to talk directly
+    # to elasticsearch at the risk of no error reporting.
+    req = jQuery.getJSON("/es/_search",
+                         { "source": JSON.stringify(request) },
+                         (data, status, xhr) => callback(data, status, xhr))
+    req.error((e) -> console.log("Error in elasticsearch request", e))
   # end execute
 # end class ElasticSearchInput
 
-#es = new ElasticSearchInput()
-#pie = new PieChart()
-#table = new TableChart()
-
-#es.histogram({ field: "@timestamp", interval: 60 * 60 * 1000 }, (data) =>
-#es.histogram({ field: "clientip" }, (data) =>
-  #pie.receive(data)
-#)
-#es.search({ query: "*", sort_by: "@timestamp" }, (data) =>
-  #table.receive(data)
-#)
-
+# JavaScript, where consistency is a joke.
 exports = window.ElasticSearchInput = ElasticSearchInput
