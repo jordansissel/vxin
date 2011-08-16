@@ -38,14 +38,25 @@ app.get("/logstash", (req, res) ->
   )
 )
 
+# TODO(sissel): Support SSL
+proxythrough = (prefix, host, port) =>
+  prefix_re = new RegExp("^" + prefix)
+  app.get(new RegExp("^" + prefix + "/.*"), (req, res) =>
+    req.url = req.url.replace(prefix_re, "")
+    proxy.proxyRequest(req, res, host: host, port: port)
+  )
+
+proxythrough("/proxy/elasticsearch", "localhost", 9200)
+#proxythrough("/proxy/loggly", "api.loggly.com", 80)
+    
 # Route anything to /es/* to elasticsearch
-app.get(/\/es\/.*/, (req, res) ->
-  req.url = req.url.replace(/^\/es/, "")
-  proxy.proxyRequest(req, res, {
-    host: "localhost",
-    port: 9200
-  })
-)
+  #app.get(/\/es\/.*/, (req, res) ->
+  #req.url = req.url.replace(/^\/es/, "")
+  #proxy.proxyRequest(req, res, {
+  #host: "localhost",
+  #port: 9200
+  #})
+  #)
 
 app.listen(3000)
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env)
