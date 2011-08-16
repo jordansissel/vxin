@@ -2,7 +2,7 @@ FILES=$(shell find ./ -name '*.coffee' 2> /dev/null)
 STATIC+=views/ public/ app.js
 OBJECTS=$(addprefix build/, $(subst .coffee,.js,$(FILES)))
 # TODO(sissel): put versions in the DEPS string
-DEPS=express socket.io jade coffee-script sass
+DEPS=express socket.io jade coffee-script sass http-proxy
 DEPS_OBJECTS=$(addprefix build/node_modules/, $(DEPS))
 
 STATIC_FILES=$(shell find $(STATIC) -type f 2> /dev/null | egrep '\.(css|js|jade|jpg|sass)$$')
