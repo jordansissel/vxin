@@ -101,6 +101,7 @@ class ElasticSearchInput # extends Input
     # or other lame hacks and we don't get nice error reporting.
     # TODO(sissel): Make the path tunable; allow folks to talk directly
     # to elasticsearch at the risk of no error reporting.
+    # TODO(sissel): use jQuery.ajax and support timeouts
     req = jQuery.getJSON("/es/_search",
                          { "source": JSON.stringify(request) },
                          (data, status, xhr) => callback(data, status, xhr))
