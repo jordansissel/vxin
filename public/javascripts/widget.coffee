@@ -24,53 +24,32 @@ class Widget
     )
 # end class Widget
 
-wtable = new Widget()
-#search = new ElasticSearchInput({
-#})
-#input.search({ 
-  #query: "@type:apache",
-  #sort_by: "@timestamp"
-#})
+exports = window.Widget = Widget
 
-table = new TableChart(
-  #columns: [ "@timestamp", "@message" ],
-  #header: false
-  #column_config: {
-  #"@timestamp": "timestamp",
-  #"@message": "message",
-  #}
-)
-#wtable.in(input)
-#wtable.out(table)
-
-console.log("OK")
-#wtable.append("#table")
-
-# lolpiegraphs
-for i in [1..2]
-  console.log(i)
-  input = new ElasticSearchInput()
-  pie = new PieChart()
-  wpie = new Widget()
-  queries = [
-    { query: "@type:apache", field: "response" },
-    { query: "@type:apache", field: "bytes" },
-    { query: "@type:apache", field: "verb" },
-    { query: "@type:apache", field: "agent" },
-    { query: "@type:apache", field: "referrer" },
-    { query: "@type:apache", field: "request" },
-  ]
-
-  input.histogram(queries[i % queries.length])
-  wpie.in(input)
-  wpie.out(pie)
-  wpie.append("#content", (element) ->
-    console.log(element)
-    #element
-      #.css("opacity", Math.random() * 0.5)
-      #.css("left", Math.random() * 800)
-      #.css("top", Math.random() * 500 + 50)
-      #.css("position", "absolute")
-    #element.animate({ opacity: 1.0 }, Math.random() * 100000)
-  )
+#console.log("OK")
+#
+#input = new ElasticSearchInput()
+#pie = new PieChart()
+#wpie = new Widget()
+#queries = [
+  #{ query: "@type:apache", field: "response" },
+  #{ query: "@type:apache", field: "bytes" },
+  #{ query: "@type:apache", field: "verb" },
+  #{ query: "@type:apache", field: "agent" },
+  #{ query: "@type:apache", field: "referrer" },
+  #{ query: "@type:apache", field: "request" },
+#]
+#
+#input.histogram(queries[i % queries.length])
+#wpie.in(input)
+#wpie.out(pie)
+#wpie.append("#content", (element) ->
+  #console.log(element)
+  #element
+    #.css("opacity", Math.random() * 0.5)
+    #.css("left", Math.random() * 800)
+    #.css("top", Math.random() * 500 + 50)
+    #.css("position", "absolute")
+  #element.animate({ opacity: 1.0 }, Math.random() * 100000)
+#)
 
