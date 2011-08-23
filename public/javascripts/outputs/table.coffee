@@ -64,11 +64,20 @@ class TableChart # extends Output
     if @header 
       # TODO(sissel): Handle column renaes?
       if @columns?
-        columns = ("<th>" + @text(key) + "</th>" for key in @columns)
+        text_columns = []
+        for column in @columns
+          console.log("column", column)
+          if typeof(column) == "object"
+            for name, value of column
+              text_columns.push(name)
+          else
+            text_columns.push(column)
+        # end for each @columns
+        columns = ("<th>" + @text(key) + "</th>" for key in text_columns)
       else
-        columns = ("<th>" + @text(key) + "</th>" for key of result[0])
+        columns = ("<th>" + @text(key) + "</th>" for key in result[0])
       header = $("<tr>" + columns + "</tr>").addClass("widget-table-header")
-      header.addClass("header")
+      #header.addClass("header")
       el.prepend(header)
     # if @header?
 
@@ -77,6 +86,7 @@ class TableChart # extends Output
 
     # 'vis' appears to be a one-element array containing the div. Turn it into
     # a jquery context before returning.
+    $(el).addClass("zebra-striped")
     return el
 
   text: (column) ->
@@ -92,7 +102,19 @@ class TableChart # extends Output
     if @columns?
       tr = $("<tr>")
       for column in @columns
-        td = $("<td>").addClass(@class(column)).text(data._source[column])
+        # column is a single element hash of name:value
+        # TODO(sissel): handle this in a function
+        [name, value] = ["", ""]
+        if typeof(column) == "object"
+          for name, value_script of column
+            true
+          _ = data
+          console.log("valuescript", value, value_script)
+          value = eval(value_script)
+        else
+          value = data[column]
+
+        td = $("<td>").addClass(@class(column)).text(value)
         tr.append(td)
       return tr.html()
     else

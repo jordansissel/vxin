@@ -60,7 +60,12 @@ class ElasticSearchInput # extends Input
         when "terms"
           result = []
           for entry in data.facets.histo1.terms
-            result.push({ key: entry.term, count: entry.count })
+            # TODO(sissel): Not sure how to make coffeescript take a variable
+            # as a key.
+            row = { count: entry.count }
+            row[settings.field] = entry.term
+            result.push(row)
+            #result.push({ key: entry.term, count: entry.count })
         when "histogram"
           result = data.facets.histo1.entries
       return result

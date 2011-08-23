@@ -1,10 +1,23 @@
-
-div#header
-  form#query(method="get", action="")
-    label(for="textinput") Input:
-    input#textinput(type="text", name="query")
-  .logo logstash
-div#content
+div.topbar
+  div.fill
+    div.container
+      ul
+        li
+          form.query(method="get", action="")
+            input.query(type="text", name="query", placeholder="Search")
+      ul.nav.secondary-nav
+        li.menu
+          a.menu(href="#") Drop sucka
+          ul.menu-dropdown
+            li 
+              a(href="#") one
+            li 
+              a(href="#") two
+            li.divider
+            li 
+              a(href="#") three
+        
+div.container#content(style="margin-top: 40px")
 
 script(src="/javascripts/jquery-1.6.2.min.js")
 script(src="/javascripts/jquery.tmpl.min.js")

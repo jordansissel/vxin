@@ -1,10 +1,7 @@
 !!!
 html
   head
-    title #{title} (#{locals.style})
-    - if (typeof locals.style === undefined)
-      link(rel="stylesheet", href="/stylesheets/style.css")
-    - else
-      link(rel="stylesheet", href="/stylesheets/#{locals.style}")
+    title #{title}
+    link(rel="stylesheet", href="/stylesheets/bootstrap-1.1.0.min.css")
 
   body!= body

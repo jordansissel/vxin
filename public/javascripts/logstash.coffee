@@ -1,24 +1,44 @@
-jQuery("form#query").submit((e) => 
-  e.preventDefault()
+$ = jQuery
 
+# click anywhere to hide the current dropdown
+$(window).bind("click", (e) ->
+  $('a.menu').parent("li").removeClass("open")
+)
+
+$("a.menu").click((e) ->
+  $(this).parent("li").toggleClass('open')
+  return false
+)
+
+
+$("form.query").submit((e) => 
+  e.preventDefault()
 
   input = new ElasticSearchInput()
   #pie = new PieChart()
-  table = new TableChart()
+  table = new TableChart(
+    columns: [ 
+      # Example of using a 'script' as the value
+      # for a column named 'clientip'
+      { "clientip": "_.clientip" },
+
+      # Example using the same name for header as a property on the data
+      "count"
+    ]
+  )
   widget = new Widget()
   query = {
-    query: jQuery("input[name=query]", e.target).val()
-    field: "referrer"
+    query: $("input[name=query]", e.target).val()
+    field: "clientip"
   }
 
-  input.count(query)
+  input.histogram(query)
   console.log(input.request)
   widget.in(input)
   widget.out(table)
 
-  jQuery("#content").empty()
+  $("#content").empty()
   widget.append("#content", (element) ->
-    console.log(query)
     element
       #.css("opacity", Math.random() * 0.5)
       .css("opacity", 0.1)
