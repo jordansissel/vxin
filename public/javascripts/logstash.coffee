@@ -20,10 +20,18 @@ $("form.query").submit((e) =>
     columns: [ 
       # Example of using a 'script' as the value
       # for a column named 'clientip'
-      { "clientip": "_.clientip" },
+      #{ "clientip": "_.clientip" },
 
       # Example using the same name for header as a property on the data
-      "count"
+      #"count"
+
+      # TODO(sissel): instead of { string: string } this needs
+      # to be { string: function }
+      #
+      # like:
+      #   { "timestamp": (_) -> v._source["@timestamp"] }
+      { "timestamp": "_._source['@timestamp']" }
+      { "message": "_._source['@message']" }
     ]
   )
   widget = new Widget()
@@ -32,7 +40,8 @@ $("form.query").submit((e) =>
     field: "clientip"
   }
 
-  input.histogram(query)
+  #input.histogram(query)
+  input.search(query)
   console.log(input.request)
   widget.in(input)
   widget.out(table)
