@@ -1,14 +1,10 @@
 
 div#header
-  form.search(method="get", action="#")
+  form#query(method="get", action="")
     label(for="textinput") Input:
     input#textinput(type="text", name="query")
   .logo logstash
 div#content
-  table
-    tr
-      td#pie
-      td#table
 
 script(src="/javascripts/jquery-1.6.2.min.js")
 script(src="/javascripts/jquery.tmpl.min.js")
@@ -20,3 +16,5 @@ script(src="/javascripts/outputs/bar.js")
 script(src="/javascripts/outputs/pie.js")
 script(src="/javascripts/outputs/table.js")
 script(src="/javascripts/widget.js")
+script(src="/javascripts/logstash.js")
+
