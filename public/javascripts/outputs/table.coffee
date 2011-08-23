@@ -103,6 +103,6 @@ class TableChart # extends Output
         tr.append(td)
       return tr.html()
   # end display
-# end class PieChart
+# end class TableChart
   
 exports = window.TableChart = TableChart
