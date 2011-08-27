@@ -1,64 +1,65 @@
 FILES=$(shell find ./ -name '*.coffee' 2> /dev/null)
 STATIC+=views/ public/ app.js
-OBJECTS=$(addprefix build/, $(subst .coffee,.js,$(FILES)))
+OBJECTS=$(addprefix $(BUILDDIR)/, $(subst .coffee,.js,$(FILES)))
 # TODO(sissel): put versions in the DEPS string
 DEPS=express socket.io jade coffee-script sass http-proxy
-DEPS_OBJECTS=$(addprefix build/node_modules/, $(DEPS))
+DEPS_OBJECTS=$(addprefix $(BUILDDIR)/node_modules/, $(DEPS))
 
 STATIC_FILES=$(shell find $(STATIC) -type f 2> /dev/null | egrep '\.(css|js|jade|jpg|sass)$$')
-STATIC_OBJECTS=$(addprefix build/, $(STATIC_FILES))
+STATIC_OBJECTS=$(addprefix $(BUILDDIR)/, $(STATIC_FILES))
 
-COFFEE=./build/node_modules/coffee-script/bin/coffee
+COFFEE=./$(BUILDDIR)/node_modules/coffee-script/bin/coffee
 VPATH=src
 QUIET=@
+BUILDDIR=build
 
 default: all
 all: compile static
 
-build/node_modules/coffee-script: VERSION=1.1.1
+$(BUILDDIR)/node_modules/coffee-script: VERSION=1.1.1
 
 clean:
 	rm -f $(OBJECTS) $(STATIC_OBJECTS)
 
 superclean:
-	rm -fr build/
+	rm -fr $(BUILDDIR)/
 
-coffee-script: build/node_modules/coffee-script
+coffee-script: $(BUILDDIR)/node_modules/coffee-script
 
 %.coffee: Makefile
 
-build/%.js: %.coffee | build coffee-script
+$(BUILDDIR)/%.js: %.coffee | $(BUILDDIR) coffee-script
 	@echo "Compiling $< (to $@)"
 	$(QUIET)[ -d $(shell dirname $@) ] || mkdir -p $(shell dirname $@)
 	$(QUIET)$(COFFEE) -c -o $(shell dirname $@) $<
 
-build/%.css: %.css | build
+$(BUILDDIR)/%.css: %.css | $(BUILDDIR)
 	@echo "Copying $< (to $@)"
 	$(QUIET)[ -d $(shell dirname $@) ] || mkdir -p $(shell dirname $@)
 	$(QUIET)cp $< $@
 
-build/%.sass: %.sass | build
+$(BUILDDIR)/%.sass: %.sass | $(BUILDDIR)
 	@echo "Copying $< (to $@)"
 	$(QUIET)[ -d $(shell dirname $@) ] || mkdir -p $(shell dirname $@)
 	$(QUIET)cp $< $@
 
-build/%.js: %.js | build
+$(BUILDDIR)/%.js: %.js | $(BUILDDIR)
 	@echo "Copying $< (to $@)"
 	$(QUIET)[ -d $(shell dirname $@) ] || mkdir -p $(shell dirname $@)
 	$(QUIET)cp $< $@
 
-build/%.jade: %.jade | build
+$(BUILDDIR)/%.jade: %.jade | $(BUILDDIR)
 	@echo "Copying $< (to $@)"
 	$(QUIET)[ -d $(shell dirname $@) ] || mkdir -p $(shell dirname $@)
 	$(QUIET)cp $< $@
 
-build/%.jpg: %.jpg | build
+$(BUILDDIR)/%.jpg: %.jpg | $(BUILDDIR)
 	@echo "Copying $< (to $@)"
 	$(QUIET)[ -d $(shell dirname $@) ] || mkdir -p $(shell dirname $@)
 	$(QUIET)cp $< $@
 
-build: 
-	$(QUIET)mkdir build
+$(BUILDDIR): 
+	$(QUIET)mkdir $(BUILDDIR)
 
 .PHONY: debug
 debug:
@@ -67,29 +68,29 @@ debug:
 static: $(STATIC_OBJECTS)
 compile: deps $(OBJECTS)
 
-build/node_modules: | build
+$(BUILDDIR)/node_modules: | $(BUILDDIR)
 	$(QUIET)mkdir $@
 
-build/node_modules/%: VERSIONSPEC=$(shell [ ! -z "$(VERSION)" ] && echo "@$(VERSION)")
-build/node_modules/%: NAME=$(shell basename $@)
-build/node_modules/%: | build/node_modules
+$(BUILDDIR)/node_modules/%: VERSIONSPEC=$(shell [ ! -z "$(VERSION)" ] && echo "@$(VERSION)")
+$(BUILDDIR)/node_modules/%: NAME=$(shell basename $@)
+$(BUILDDIR)/node_modules/%: | $(BUILDDIR)/node_modules
 	@echo "Installing $(NAME)$(VERSIONSPEC)"
-	$(QUIET)(cd build; npm install $(NAME)$(VERSIONSPEC))
+	$(QUIET)(cd $(BUILDDIR); npm install $(NAME)$(VERSIONSPEC))
 
 deps: $(DEPS_OBJECTS)
 
-build/vxin-loggly-full.js: compile
+$(BUILDDIR)/vxin-loggly-full.js: compile
 	cat \
-	build/public/javascripts/d3/d3.js \
-	build/public/javascripts/d3/d3.geom.js \
-	build/public/javascripts/d3/d3.behavior.js \
-	build/public/javascripts/d3/d3.layout.js \
-	build/public/javascripts/d3/d3.csv.js \
-	build/public/javascripts/d3/d3.time.js \
-	build/public/javascripts/d3/d3.chart.js \
-	build/public/javascripts/d3/d3.geo.js \
-	build/public/javascripts/inputs/*.js \
-	build/public/javascripts/outputs/*.js \
-	build/public/javascripts/widget.js \
-	build/public/javascripts/vxin-loggly.js \
+	$(BUILDDIR)/public/javascripts/d3/d3.js \
+	$(BUILDDIR)/public/javascripts/d3/d3.geom.js \
+	$(BUILDDIR)/public/javascripts/d3/d3.behavior.js \
+	$(BUILDDIR)/public/javascripts/d3/d3.layout.js \
+	$(BUILDDIR)/public/javascripts/d3/d3.csv.js \
+	$(BUILDDIR)/public/javascripts/d3/d3.time.js \
+	$(BUILDDIR)/public/javascripts/d3/d3.chart.js \
+	$(BUILDDIR)/public/javascripts/d3/d3.geo.js \
+	$(BUILDDIR)/public/javascripts/inputs/*.js \
+	$(BUILDDIR)/public/javascripts/outputs/*.js \
+	$(BUILDDIR)/public/javascripts/widget.js \
+	$(BUILDDIR)/public/javascripts/vxin-loggly.js \
 	> $@
