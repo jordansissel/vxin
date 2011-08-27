@@ -11,7 +11,7 @@ STATIC_OBJECTS=$(addprefix $(BUILDDIR)/, $(STATIC_FILES))
 COFFEE=./$(BUILDDIR)/node_modules/coffee-script/bin/coffee
 VPATH=src
 QUIET=@
-BUILDDIR=build
+BUILDDIR?=build
 
 default: all
 all: compile static
