@@ -7,7 +7,9 @@ class VxinLoggly
     console.log("args", args)
     console.log("stdin", stdin)
     console.log("context", context)
-    return [$("<b>testing</b>").get(0)]
+    # Currently the loggly 'shell command' stuff requires returning html
+    # strings.
+    return [$("<div>").append($("<b>testing</b>")).html()]
   # end run
 # end class VxinLoggly
 
