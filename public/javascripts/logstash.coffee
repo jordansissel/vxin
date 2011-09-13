@@ -36,21 +36,25 @@ $("form.query").submit((e) =>
   )
 
   widget = new Widget()
-  query = {
-    query: $("input[name=query]", e.target).val()
-    field: "clientip"
+
+  query = $("input[name=query]", e.target).val()
+  [query, groupby] = query.split(" BY ")
+
+  settings = {
+    query: query
+    field: groupby
   }
 
-  #input.histogram(query)
-  input.search(query)
+  if groupby?
+    input.histogram(settings)
+  else
+    input.search(settings)
+
   widget.in(input)
   widget.out(table)
 
   $(".loading.throbber").css("opacity", 1)
-
   widget.render((error, element) ->
-    $(".loading.throbber").css("opacity", 0)
-    console.log("Done")
 
     if error?
       # TODO(sissel): Use jquery tmpl or D3 for this.
@@ -70,7 +74,10 @@ $("form.query").submit((e) =>
     # Fade out, clear, and display the new result.
     $("#content").animate(opacity: 0.0, 200, () =>
       $("#content").empty().append(element)
-      $("#content").animate(opacity: 1.0, 200)
+      $("#content").animate(opacity: 1.0, 200,
+        () -> 
+          $(".loading.throbber").css("opacity", 0)
+      )
     )
   )
 )

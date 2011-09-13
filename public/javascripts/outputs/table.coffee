@@ -60,6 +60,7 @@ class TableChart # extends Output
 
           column[display] = key
           @columns.push(column)
+          console.log("Generated columns:", @columns)
       # end if !@columns?
       
       text_columns = []
@@ -78,7 +79,9 @@ class TableChart # extends Output
       el.prepend(header)
     # if @header?
 
-    # TODO(sissel): will need some custom templating tool to pick out the columns, etc.
+    # TODO(sissel): Seems like d3 drops the first row somehow?
+    # Hack around it.
+    result.unshift(null)
     vis.selectAll("tr")
       .data(result)
       .enter()
@@ -100,7 +103,6 @@ class TableChart # extends Output
   # end receive
 
   detect_columns: (obj, prefix, list) ->
-    console.log("Detecting columns", obj)
     list = [] if !list?
     prefix = "_" if !prefix?
 
@@ -137,7 +139,6 @@ class TableChart # extends Output
             true
           _ = data
           value = eval(value_script)
-          console.log("valuescript", value, value_script)
         else
           value = data[column]
 

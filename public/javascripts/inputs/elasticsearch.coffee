@@ -11,7 +11,8 @@ class ElasticSearchInput # extends Input
     request = {
       "query" : {
         "query_string": {
-          "query": settings.query || "*"
+          "query": settings.query || "*",
+          "default_operator": "AND"
         }
       }, # query
       "facets" : {
