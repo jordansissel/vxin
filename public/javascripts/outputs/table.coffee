@@ -28,15 +28,50 @@ class TableChart # extends Output
     @column_config = settings.column_config ? {}
   # end constructor
 
-  receive: (result) ->
+  receive: (result, callback) ->
+    if !result? or result.length == 0
+      callback(status: 200, message: "No results", null)
+      return
+
     # Generate an HTML table.
     vis = d3.select($("<div>").get(0))
       .append("table")
       .append("tbody")
 
-    # TODO(sissel): add a way to inject a header.
+    # vis[0] is the tbody, we want the table
+    el = $(vis[0]).parent()
+    # TODO(sissel): Use d3 string formatting.
+    
+    if @header 
+      # If no columns were specified but a header was requested, generate it.
+      if !@columns?
+        # results[0] here is safe because we check 'results' length above.
+        found_columns = @detect_columns(result[0])
+        #columns = ("<th>" + @text(key) + "</th>" for key in found_columns)
+        columns = ("<th>" + @text(key) + "</th>" for key in found_columns)
+        @columns = []
+        for key in found_columns
+          column = {}
+          column[key] = key
+          @columns.push(column)
+      # end if !@columns?
+      
+      text_columns = []
+      for column in @columns
+        #console.log("column", column)
+        if typeof(column) == "object"
+          for name, value of column
+            text_columns.push(name)
+        else
+          text_columns.push(column)
+      # end for each @columns
+      columns = ("<th>" + @text(key) + "</th>" for key in text_columns)
 
-    header = (key for key,val of result[0])
+      header = $("<tr>" + columns + "</tr>").addClass("widget-table-header")
+      #header.addClass("header")
+      el.prepend(header)
+    # if @header?
+
     # TODO(sissel): will need some custom templating tool to pick out the columns, etc.
     vis.selectAll("tr")
       .data(result)
@@ -49,52 +84,38 @@ class TableChart # extends Output
             return row
           )
 
-    # TODO(sissel): Would be nice to ship a table header with d3 instead of jquery.
-    #vis.selectAll("tr")
-      #.append("tr")
-      #.data((key for key of result[0]))
-      #.enter()
-        #.append("th")
-        #.text((d) => d)
-
-    # vis[0] is the tbody, we want the table
-    el = $(vis[0]).parent()
-    # TODO(sissel): Use d3 string formatting.
-    
-    if @header 
-      # TODO(sissel): Handle column renaes?
-      if @columns?
-        text_columns = []
-        for column in @columns
-          console.log("column", column)
-          if typeof(column) == "object"
-            for name, value of column
-              text_columns.push(name)
-          else
-            text_columns.push(column)
-        # end for each @columns
-        columns = ("<th>" + @text(key) + "</th>" for key in text_columns)
-      else
-        columns = ("<th>" + @text(key) + "</th>" for key in result[0])
-      header = $("<tr>" + columns + "</tr>").addClass("widget-table-header")
-      #header.addClass("header")
-      el.prepend(header)
-    # if @header?
-
     $(el).attr("cellspacing", 0)
     $(el).attr("cellpadding", 0)
 
     # 'vis' appears to be a one-element array containing the div. Turn it into
     # a jquery context before returning.
     $(el).addClass("zebra-striped")
-    return el
+    callback(null, el)
+  # end receive
+
+  detect_columns: (obj, prefix, list) ->
+    console.log("Detecting columns", obj)
+    list = [] if !list?
+    prefix = "_" if !prefix?
+
+    for key, value of obj
+
+      # Recurse deeper if necessary.
+      if typeof(value) == "object" and !(value instanceof Array)
+        @detect_columns(value, prefix + "['" + key + "']", list)
+      else
+        list.push(prefix + "['" + key + "']")
+    return list
+  # end detect_columns
 
   text: (column) ->
     return @column_config[column] ? column
+  # end text
 
   class: (column) ->
     config = @column_config[column]
     return config
+  # end class
   
   row: (data) ->
     # TODO(sissel): yield HTML elements
@@ -109,11 +130,13 @@ class TableChart # extends Output
           for name, value_script of column
             true
           _ = data
-          console.log("valuescript", value, value_script)
           value = eval(value_script)
+          console.log("valuescript", value, value_script)
         else
           value = data[column]
 
+        if typeof(value) != "string"
+          value = JSON.stringify(value)
         td = $("<td>").addClass(@class(column)).text(value)
         tr.append(td)
       return tr.html()
@@ -124,7 +147,7 @@ class TableChart # extends Output
         td = $("<td>").addClass(@class(key)).text(val)
         tr.append(td)
       return tr.html()
-  # end display
+  # end row
 # end class TableChart
   
 exports = window.TableChart = TableChart

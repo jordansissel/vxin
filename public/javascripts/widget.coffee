@@ -5,23 +5,35 @@ class Widget
   in: (input) ->
     @input = input
     return this
+  # end in
 
   out: (output) ->
     @output = output
     return this
+  # end out
 
   filter: (filter) -> 
     console.log("Widget#filter not yet implemented")
     return this
+  # end filter
+
+  render: (callback) ->
+    throw "Widget#render not called with callback" if !callback?
+
+    @input.run((error, data) => 
+      if error?
+        callback(error)
+      else
+        @output.receive(data, callback)
+    )
+  # end render 
 
   append: (selector, callback) ->
-    @input.run((data) => 
-      output = @output.receive(data)
-      #console.log("Input result:", data)
-      #console.log("Output result:", output)
+    render((element) =>
       callback(output) if callback?
       $(selector).append(output)
     )
+  # end append 
 # end class Widget
 
 exports = window.Widget = Widget

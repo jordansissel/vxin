@@ -10,14 +10,13 @@ $("a.menu").click((e) ->
   return false
 )
 
-
 $("form.query").submit((e) => 
   e.preventDefault()
 
   input = new ElasticSearchInput()
-  #pie = new PieChart()
   table = new TableChart(
-    columns: [ 
+    ___columns: [ 
+      # TODO(sissel): Permit JSONPath
       # Example of using a 'script' as the value
       # for a column named 'clientip'
       #{ "clientip": "_.clientip" },
@@ -32,8 +31,10 @@ $("form.query").submit((e) =>
       #   { "timestamp": (_) -> v._source["@timestamp"] }
       { "timestamp": "_._source['@timestamp']" }
       { "message": "_._source['@message']" }
-    ]
+    ],
+    header: true
   )
+
   widget = new Widget()
   query = {
     query: $("input[name=query]", e.target).val()
@@ -42,19 +43,34 @@ $("form.query").submit((e) =>
 
   #input.histogram(query)
   input.search(query)
-  console.log(input.request)
   widget.in(input)
   widget.out(table)
 
-  $("#content").empty()
-  widget.append("#content", (element) ->
-    element
-      #.css("opacity", Math.random() * 0.5)
-      .css("opacity", 0.1)
-      #.css("left", Math.random() * 800)
-      #.css("top", Math.random() * 500 + 50)
-      #.css("position", "absolute")
-    #element.animate({ opacity: 1.0 }, Math.random() * 1000)
-    element.animate({ opacity: 1.0 }, 200)
+  $(".loading.throbber").css("opacity", 1)
+
+  widget.render((error, element) ->
+    $(".loading.throbber").css("opacity", 0)
+    console.log("Done")
+
+    if error?
+      # TODO(sissel): Use jquery tmpl or D3 for this.
+      alertmsg = $("<div><div class='status'></div><div class='message'></div>")
+      message = error.responseText ? error.message
+      $(".status", alertmsg).html("Status code: " + error.status)
+      $(".message", alertmsg).html("Message: " + message)
+
+      if message == "{"
+        $(".message", alertmsg).addClass("plain-text")
+
+      alertmsg.addClass("alert-message").addClass("error")
+      element = alertmsg
+    # end error managment
+ 
+    # TODO(sissel): Switch this to use CSS transitions?
+    # Fade out, clear, and display the new result.
+    $("#content").animate(opacity: 0.0, 200, () =>
+      $("#content").empty().append(element)
+      $("#content").animate(opacity: 1.0, 200)
+    )
   )
 )

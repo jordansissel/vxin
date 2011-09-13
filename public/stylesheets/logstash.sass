@@ -16,5 +16,16 @@
   :vertical-align top
 #content
   :margin-top 40px !important
-img.throbber
-  :vertical-align top
+img.loading.throbber
+  :margin-top 5px
+  :margin-left 5px
+.smooth
+  =transition 0.2s linear all
+.hidden-by-default
+  =opacity 0
+
+.plain-text
+  :font-family fixed
+  :white-space pre-wrap
+  :overflow auto
+

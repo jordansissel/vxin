@@ -5,6 +5,8 @@ div.topbar
         li
           form.query(method="get", action="")
             input.query(type="text", name="query", placeholder="Search")
+        li
+          img.loading.throbber.smooth.hidden-by-default(src="/images/throbber.gif")
       ul.nav.secondary-nav
         li.menu
           a.menu(href="#") Drop sucka

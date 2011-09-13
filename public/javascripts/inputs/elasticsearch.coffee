@@ -7,7 +7,7 @@ class ElasticSearchInput # extends Input
   # end constructor
 
   histogram: (settings, callback) ->
-    console.log("Settings:", settings)
+    #console.log("Settings:", settings)
     request = {
       "query" : {
         "query_string": {
@@ -54,7 +54,7 @@ class ElasticSearchInput # extends Input
     # }
 
     @request = request
-    console.log("Request", request)
+    #console.log("Request", request)
     @process = (data) => 
       switch (type)
         when "terms"
@@ -81,7 +81,7 @@ class ElasticSearchInput # extends Input
 
     @request = request
     @process = (data) => 
-      console.log("Result:", data)
+      #console.log("Result:", data)
       return [ "key": settings.query, "count": data.count ]
     @path = "/_count"
   # end count
@@ -107,12 +107,13 @@ class ElasticSearchInput # extends Input
 
   run: (callback) -> 
     if @cached_result?
-      callback(@cached_result)
+      callback(null, @cached_result)
       return
     
-    @execute(@request, (data) =>
-      @cached_result = @process(data)
-      callback(@cached_result)
+    @execute(@request, (error, data) =>
+      # Skip processing and caching of data if there is no data.
+      @cached_result = @process(data) unless error?
+      callback(error, @cached_result)
     )
   # end run
 
@@ -131,8 +132,15 @@ class ElasticSearchInput # extends Input
 
     req = jQuery.getJSON(path
                          { "source": JSON.stringify(request) },
-                         (data, status, xhr) => callback(data, status, xhr))
-    req.error((e) -> console.log("Error in elasticsearch request", e))
+                         (data, status, xhr) => callback(null, data))
+    req.error((error) => 
+      console.log("Error in elasticsearch request", error)
+      if error.responseText[0] == "{"
+        # assume response error is json, format it sanely.
+        obj = JSON.parse(error.responseText)
+        error.responseText = JSON.stringify(obj, null, 2)
+      callback(error, null)
+    )
   # end execute
 # end class ElasticSearchInput
 

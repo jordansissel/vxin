@@ -5,7 +5,7 @@ OBJECTS=$(addprefix $(BUILDDIR)/, $(subst .coffee,.js,$(FILES)))
 DEPS=express socket.io jade coffee-script sass http-proxy
 DEPS_OBJECTS=$(addprefix $(BUILDDIR)/node_modules/, $(DEPS))
 
-STATIC_FILES=$(shell find $(STATIC) -type f 2> /dev/null | egrep '\.(css|js|jade|jpg|sass)$$')
+STATIC_FILES=$(shell find $(STATIC) -type f 2> /dev/null | egrep '\.(css|js|jade|jpg|sass|gif)$$')
 STATIC_OBJECTS=$(addprefix $(BUILDDIR)/, $(STATIC_FILES))
 
 COFFEE=./$(BUILDDIR)/node_modules/coffee-script/bin/coffee
@@ -54,6 +54,11 @@ $(BUILDDIR)/%.jade: %.jade | $(BUILDDIR)
 	$(QUIET)cp $< $@
 
 $(BUILDDIR)/%.jpg: %.jpg | $(BUILDDIR)
+	@echo "Copying $< (to $@)"
+	$(QUIET)[ -d $(shell dirname $@) ] || mkdir -p $(shell dirname $@)
+	$(QUIET)cp $< $@
+
+$(BUILDDIR)/%.gif: %.gif | $(BUILDDIR)
 	@echo "Copying $< (to $@)"
 	$(QUIET)[ -d $(shell dirname $@) ] || mkdir -p $(shell dirname $@)
 	$(QUIET)cp $< $@
