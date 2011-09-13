@@ -51,8 +51,14 @@ class TableChart # extends Output
         columns = ("<th>" + @text(key) + "</th>" for key in found_columns)
         @columns = []
         for key in found_columns
+          # Can't actually do hash literals with variable keys in JavaScript?
           column = {}
-          column[key] = key
+
+          # Make the 'value script' readable as a header.
+          # Currently this turns '_.foo.bar.baz' into 'foo<br>bar<br>baz'
+          display = key.replace(/\['/g, "<br>").replace(/'\]/g, "").replace("_<br>", "")
+
+          column[display] = key
           @columns.push(column)
       # end if !@columns?
       
