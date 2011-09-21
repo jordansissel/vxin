@@ -25,11 +25,7 @@ app.configure("production", () ->
 
 # Routes
 
-app.get("/", (req, res) -> 
-  res.render("index",
-    title: "Express"
-  )
-)
+app.get("/", (req, res) -> res.redirect("/logstash"))
 
 app.get("/logstash", (req, res) ->
   res.render("logstash",
