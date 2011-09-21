@@ -27,6 +27,42 @@ class TableChart # extends Output
     @header = settings.header ? true
     @column_config = settings.column_config ? {}
   # end constructor
+  
+  generate_columns: (result) ->
+    # TODO(sissel): too much going on here, split it up.
+      # results[0] here is safe because we check 'results' length above.
+      found_columns = @detect_columns(result[0])
+      #columns = ("<th>" + @text(key) + "</th>" for key in found_columns)
+      columns = ("<th>" + @text(key) + "</th>" for key in found_columns)
+      @columns = []
+      for key in found_columns
+        # Can't actually do hash literals with variable keys in JavaScript?
+        column = {}
+
+        # Make the 'value script' readable as a header.
+        # Currently this turns '_.foo.bar.baz' into 'foo<br>bar<br>baz'
+        display = key.replace(/\['/g, "<br>").replace(/'\]/g, "").replace("_<br>", "")
+
+        column[display] = key
+        @columns.push(column)
+        #console.log("Generated columns:", @columns)
+  # end generate_columns
+
+  generate_header: (result) ->
+    text_columns = []
+    for column in @columns
+      #console.log("column", column)
+      if typeof(column) == "object"
+        for name, value of column
+          text_columns.push(name)
+      else
+        text_columns.push(column)
+    # end for each @columns
+    columns = ("<th>" + @text(key) + "</th>" for key in text_columns)
+
+    header = $("<tr>" + columns + "</tr>").addClass("widget-table-header")
+    return header
+  # end generate_header
 
   receive: (result, callback) ->
     if !result? or result.length == 0
@@ -39,49 +75,11 @@ class TableChart # extends Output
       .append("tbody")
 
     # vis[0] is the tbody, we want the table
-    el = $(vis[0]).parent()
+    table = $(vis[0]).parent()
     # TODO(sissel): Use d3 string formatting.
     
-    if @header 
-      # If no columns were specified but a header was requested, generate it.
-      if !@columns?
-        # results[0] here is safe because we check 'results' length above.
-        found_columns = @detect_columns(result[0])
-        #columns = ("<th>" + @text(key) + "</th>" for key in found_columns)
-        columns = ("<th>" + @text(key) + "</th>" for key in found_columns)
-        @columns = []
-        for key in found_columns
-          # Can't actually do hash literals with variable keys in JavaScript?
-          column = {}
+    @generate_columns(result) if !@columns?
 
-          # Make the 'value script' readable as a header.
-          # Currently this turns '_.foo.bar.baz' into 'foo<br>bar<br>baz'
-          display = key.replace(/\['/g, "<br>").replace(/'\]/g, "").replace("_<br>", "")
-
-          column[display] = key
-          @columns.push(column)
-          console.log("Generated columns:", @columns)
-      # end if !@columns?
-      
-      text_columns = []
-      for column in @columns
-        #console.log("column", column)
-        if typeof(column) == "object"
-          for name, value of column
-            text_columns.push(name)
-        else
-          text_columns.push(column)
-      # end for each @columns
-      columns = ("<th>" + @text(key) + "</th>" for key in text_columns)
-
-      header = $("<tr>" + columns + "</tr>").addClass("widget-table-header")
-      #header.addClass("header")
-      el.prepend(header)
-    # if @header?
-
-    # TODO(sissel): Seems like d3 drops the first row somehow?
-    # Hack around it.
-    result.unshift(null)
     vis.selectAll("tr")
       .data(result)
       .enter()
@@ -90,16 +88,19 @@ class TableChart # extends Output
           .html((d) => 
             # TODO(sissel): Special handling for jQuery or HTMLElement objects?
             row = @row(d)
-            return row
+            return row.html()
           )
 
-    $(el).attr("cellspacing", 0)
-    $(el).attr("cellpadding", 0)
+    # Append header if it was requested.
+    table.prepend(@generate_header(result)) if @header 
+
+    $(table).attr("cellspacing", 0)
+    $(table).attr("cellpadding", 0)
 
     # 'vis' appears to be a one-element array containing the div. Turn it into
     # a jquery context before returning.
-    $(el).addClass("zebra-striped")
-    callback(null, el)
+    $(table).addClass("zebra-striped")
+    callback(null, table)
   # end receive
 
   detect_columns: (obj, prefix, list) ->
@@ -146,14 +147,14 @@ class TableChart # extends Output
           value = JSON.stringify(value)
         td = $("<td>").addClass(@class(column)).text(value)
         tr.append(td)
-      return tr.html()
+      return tr
     else
       #str = ""
       tr = $("<tr>")
       for key, val of data
         td = $("<td>").addClass(@class(key)).text(val)
         tr.append(td)
-      return tr.html()
+      return tr
   # end row
 # end class TableChart
   
