@@ -113,7 +113,8 @@ class ElasticSearchInput # extends Input
   # end search
 
   run: (callback) -> 
-    clock = new StopWatch()
+    clock = new StopWatch(element: $("#status.loading"),
+      label: "Querying ElasticSearch")
     if @cached_result?
       console.log("Using cached result")
       console.log("ElasticSearch input took " + clock.stop() + " seconds")

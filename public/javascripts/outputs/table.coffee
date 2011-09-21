@@ -68,7 +68,7 @@ class TableChart # extends Output
     if !result? or result.length == 0
       callback(status: 200, message: "No results", null)
       return
-    clock = new StopWatch()
+    clock = new StopWatch(element: $("#status.loading"), label: "Building table")
 
     # Generate an HTML table.
     vis = d3.select($("<div>").get(0))

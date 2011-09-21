@@ -9,7 +9,7 @@ class TreeView # extends Output
     if !result? or result.length == 0
       callback(status: 200, message: "No results", null)
       return
-    clock = new StopWatch()
+    clock = new StopWatch(element: $(".loading.status"), label: "Building tree")
 
     # Generate an HTML table.
     vis = d3.select($("<div>").get(0))

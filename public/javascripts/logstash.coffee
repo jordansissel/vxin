@@ -80,7 +80,7 @@ $("form.query").submit((e) =>
 
 update = (widget) ->
   $(".loading.throbber").css("opacity", 1)
-  clock = new StopWatch()
+  clock = new StopWatch(element: $("#status.loading"), label: "Updating...")
   widget.render((error, element) ->
     duration = clock.stop()
 
