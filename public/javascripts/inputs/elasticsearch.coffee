@@ -27,6 +27,7 @@ class ElasticSearchInput # extends Input
       # If given an interval, ask elasticsearch for a histogram
       type = "histogram"
       # TODO(sissel): Allow specifying a 'script field' too
+      # TODO(sissel): Allow specifying composite fields (like 'request,response')
       request.facets.histo1 = { 
         "histogram" : {
           "field": settings.field,
@@ -37,6 +38,7 @@ class ElasticSearchInput # extends Input
       # Otherwise ask for a terms facet.
       type = "terms"
       # TODO(sissel): Allow specifying a 'script field' too
+      # TODO(sissel): Allow specifying composite fields (like 'request,response')
       request.facets.histo1 = {
         "terms": {
           "field": settings.field
