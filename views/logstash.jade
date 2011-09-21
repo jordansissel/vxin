@@ -9,17 +9,17 @@ div.topbar
           img.loading.throbber.smooth.hidden-by-default(src="/images/throbber.gif")
       ul.nav.secondary-nav
         li.menu
-          a.menu(href="#") Drop sucka
+          a.menu(href="#") Mutate
           ul.menu-dropdown
             li 
-              a(href="#") one
+              a.output-select.table(href="#") View as table
             li 
-              a(href="#") two
+              a.output-select.tree(href="#") View as tree
             li.divider
             li 
               a(href="#") three
         
-div.container#content(style="margin-top: 40px")
+div.container.smooth#content(style="margin-top: 40px")
 
 script(src="/javascripts/jquery-1.6.2.min.js")
 script(src="/javascripts/jquery.tmpl.min.js")
@@ -30,6 +30,7 @@ script(src="/javascripts/inputs/elasticsearch.js")
 script(src="/javascripts/outputs/bar.js")
 script(src="/javascripts/outputs/pie.js")
 script(src="/javascripts/outputs/table.js")
+script(src="/javascripts/outputs/tree.js")
 script(src="/javascripts/widget.js")
 script(src="/javascripts/logstash.js")
 

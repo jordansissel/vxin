@@ -10,11 +10,28 @@ $("a.menu").click((e) ->
   return false
 )
 
+$("a.output-select.table").click((e) -> 
+  console.log("Table chosen")
+  widget = window.$$widget
+  widget.out(new TableChart())
+  update(widget)
+)
+
+$("a.output-select.tree").click((e) -> 
+  console.log("tree chosen")
+  widget = window.$$widget
+  widget.out(new TreeView())
+  update(widget)
+)
+
+#window.$$output = TableChart unless window.$$output?
+window.$$output = TreeView unless window.$$output?
 $("form.query").submit((e) => 
   e.preventDefault()
 
   input = new ElasticSearchInput()
-  table = new TableChart(
+  output = new window.$$output(
+    # Temporarily disable specific column selection for now.
     ___columns: [ 
       # TODO(sissel): Permit JSONPath
       # Example of using a 'script' as the value
@@ -36,6 +53,7 @@ $("form.query").submit((e) =>
   )
 
   widget = new Widget()
+  window.$$widget = widget
 
   query = $("input[name=query]", e.target).val()
   [query, groupby] = query.split(" BY ")
@@ -51,8 +69,11 @@ $("form.query").submit((e) =>
     input.search(settings)
 
   widget.in(input)
-  widget.out(table)
+  widget.out(output)
+  update(widget)
+)
 
+update = (widget) ->
   $(".loading.throbber").css("opacity", 1)
   widget.render((error, element) ->
 
@@ -63,6 +84,8 @@ $("form.query").submit((e) =>
       $(".status", alertmsg).html("Status code: " + error.status)
       $(".message", alertmsg).html("Message: " + message)
 
+      # Use fixed-width if the message appears to be json.
+      # TODO(sissel): Use TreeView if the message appears to be JSON.
       if message == "{"
         $(".message", alertmsg).addClass("plain-text")
 
@@ -70,14 +93,15 @@ $("form.query").submit((e) =>
       element = alertmsg
     # end error managment
  
+    $("#content").empty().append(element)
+    $(".loading.throbber").css("opacity", 0)
     # TODO(sissel): Switch this to use CSS transitions?
     # Fade out, clear, and display the new result.
-    $("#content").animate(opacity: 0.0, 200, () =>
-      $("#content").empty().append(element)
-      $("#content").animate(opacity: 1.0, 200,
-        () -> 
-          $(".loading.throbber").css("opacity", 0)
-      )
-    )
-  )
-)
+    #$("#content").animate(opacity: 0.0, 200, () =>
+      #$("#content").empty().append(element)
+      #$("#content").animate(opacity: 1.0, 200,
+        #() -> $(".loading.throbber").css("opacity", 0)
+      #)
+    #) # #content.animate
+  ) # widget.redner
+# end update
