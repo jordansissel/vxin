@@ -12,16 +12,21 @@ $("a.menu").click((e) ->
 
 $("a.output-select.table").click((e) -> 
   console.log("Table chosen")
-  widget = window.$$widget
-  widget.out(new TableChart())
-  update(widget)
+  window.$$output = TableChart
+
+  if window.$$widget?
+    widget = window.$$widget
+    widget.out(new TableChart())
+    update(widget)
 )
 
 $("a.output-select.tree").click((e) -> 
   console.log("tree chosen")
-  widget = window.$$widget
-  widget.out(new TreeView())
-  update(widget)
+  window.$$output = TreeView
+  if window.$$widget?
+    widget = window.$$widget
+    widget.out(new TreeView())
+    update(widget)
 )
 
 #window.$$output = TableChart unless window.$$output?
@@ -56,7 +61,7 @@ $("form.query").submit((e) =>
   window.$$widget = widget
 
   query = $("input[name=query]", e.target).val()
-  [query, groupby] = query.split(" BY ")
+  [query, groupby] = query.split(/\s+BY\s+/)
 
   settings = {
     query: query
@@ -75,7 +80,9 @@ $("form.query").submit((e) =>
 
 update = (widget) ->
   $(".loading.throbber").css("opacity", 1)
+  clock = new StopWatch()
   widget.render((error, element) ->
+    duration = clock.stop()
 
     if error?
       # TODO(sissel): Use jquery tmpl or D3 for this.
@@ -95,6 +102,8 @@ update = (widget) ->
  
     $("#content").empty().append(element)
     $(".loading.throbber").css("opacity", 0)
+    $(".loading.status").text(duration + " seconds")
+
     # TODO(sissel): Switch this to use CSS transitions?
     # Fade out, clear, and display the new result.
     #$("#content").animate(opacity: 0.0, 200, () =>
