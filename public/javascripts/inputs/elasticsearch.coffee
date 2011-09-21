@@ -108,6 +108,7 @@ class ElasticSearchInput # extends Input
 
   run: (callback) -> 
     if @cached_result?
+      console.log("Using cached result")
       callback(null, @cached_result)
       return
     
