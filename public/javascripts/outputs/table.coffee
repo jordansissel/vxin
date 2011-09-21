@@ -68,6 +68,7 @@ class TableChart # extends Output
     if !result? or result.length == 0
       callback(status: 200, message: "No results", null)
       return
+    clock = new StopWatch()
 
     # Generate an HTML table.
     vis = d3.select($("<div>").get(0))
@@ -100,6 +101,8 @@ class TableChart # extends Output
     # 'vis' appears to be a one-element array containing the div. Turn it into
     # a jquery context before returning.
     $(table).addClass("zebra-striped")
+    console.log("Table generation took " + clock.stop() + " seconds")
+
     callback(null, table)
   # end receive
 

@@ -9,6 +9,7 @@ class TreeView # extends Output
     if !result? or result.length == 0
       callback(status: 200, message: "No results", null)
       return
+    clock = new StopWatch()
 
     # Generate an HTML table.
     vis = d3.select($("<div>").get(0))
@@ -36,6 +37,7 @@ class TreeView # extends Output
     $(".reveal-sibling", el).click((e) -> 
       $(e.target).siblings().toggleClass("hidden-by-default")
     )
+    console.log("Tree generation took " + clock.stop() + " seconds")
     callback(null, el)
   # end receive
 

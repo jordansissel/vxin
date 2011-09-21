@@ -26,6 +26,7 @@ class ElasticSearchInput # extends Input
     if settings.interval?
       # If given an interval, ask elasticsearch for a histogram
       type = "histogram"
+      # TODO(sissel): Allow specifying a 'script field' too
       request.facets.histo1 = { 
         "histogram" : {
           "field": settings.field,
@@ -35,11 +36,13 @@ class ElasticSearchInput # extends Input
     else
       # Otherwise ask for a terms facet.
       type = "terms"
+      # TODO(sissel): Allow specifying a 'script field' too
       request.facets.histo1 = {
         "terms": {
           "field": settings.field
         }
       }
+      console.log("request", request)
     # end if settings.interval?
 
     # ElasticSearch results can be like this:
@@ -57,6 +60,7 @@ class ElasticSearchInput # extends Input
     @request = request
     #console.log("Request", request)
     @process = (data) => 
+      # TODO(sissel): just make methods for this 'process_histogram' etc
       switch (type)
         when "terms"
           result = []
@@ -107,12 +111,15 @@ class ElasticSearchInput # extends Input
   # end search
 
   run: (callback) -> 
+    clock = new StopWatch()
     if @cached_result?
       console.log("Using cached result")
+      console.log("ElasticSearch input took " + clock.stop() + " seconds")
       callback(null, @cached_result)
       return
     
     @execute(@request, (error, data) =>
+      console.log("ElasticSearch input took " + clock.stop() + " seconds")
       # Skip processing and caching of data if there is no data.
       @cached_result = @process(data) unless error?
       callback(error, @cached_result)
