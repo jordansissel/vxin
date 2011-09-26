@@ -29,6 +29,15 @@ $("a.output-select.tree").click((e) ->
     update(widget)
 )
 
+$("a.output-select.pie").click((e) -> 
+  console.log("pie chosen")
+  window.$$output = PieChart
+  if window.$$widget?
+    widget = window.$$widget
+    widget.out(new PieChart())
+    update(widget)
+)
+
 #window.$$output = TableChart unless window.$$output?
 window.$$output = TreeView unless window.$$output?
 $("form.query").submit((e) => 

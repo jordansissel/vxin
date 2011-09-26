@@ -7,7 +7,7 @@ class PieChart # extends Output
     @radius = @width / 2
   # end constructor
 
-  receive: (results) ->
+  receive: (result, callback) ->
     counts = {}
     data = []
     scaledata = []
@@ -67,7 +67,7 @@ class PieChart # extends Output
           d.value > .15 ? null : "none")
         .text((d, i) => terms[i] )
 
-    return $(vis[0])
+    return callback(null, $(vis[0]))
   # end receive
 # end class PieChart
   
