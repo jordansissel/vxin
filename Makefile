@@ -8,6 +8,7 @@ DEPS_OBJECTS=$(addprefix $(BUILDDIR)/node_modules/, $(DEPS))
 STATIC_FILES=$(shell find $(STATIC) -type f 2> /dev/null | egrep '\.(css|js|jade|jpg|sass|gif)$$')
 STATIC_OBJECTS=$(addprefix $(BUILDDIR)/, $(STATIC_FILES))
 
+NPM=$(CURDIR)/build/build-tools/npm/bin/npm.js
 COFFEE=./$(BUILDDIR)/node_modules/coffee-script/bin/coffee
 VPATH=src
 QUIET=@
@@ -78,9 +79,20 @@ $(BUILDDIR)/node_modules: | $(BUILDDIR)
 
 $(BUILDDIR)/node_modules/%: VERSIONSPEC=$(shell [ ! -z "$(VERSION)" ] && echo "@$(VERSION)")
 $(BUILDDIR)/node_modules/%: NAME=$(shell basename $@)
-$(BUILDDIR)/node_modules/%: | $(BUILDDIR)/node_modules
+$(BUILDDIR)/node_modules/%: | $(BUILDDIR)/node_modules $(NPM)
 	@echo "Installing $(NAME)$(VERSIONSPEC)"
-	$(QUIET)(cd $(BUILDDIR); npm install $(NAME)$(VERSIONSPEC))
+	$(QUIET)(cd $(BUILDDIR); node $(NPM) install $(NAME)$(VERSIONSPEC))
+
+$(BUILDDIR)/build-tools: $(BUILDDIR)
+	mkdir $@
+
+$(BUILDDIR)/build-tools/npm: $(BUILDDIR)/build-tools
+	mkdir $@
+
+npm: $(NPM)
+$(NPM): | $(BUILDDIR)/build-tools/npm
+	wget -qO - http://registry.npmjs.org/npm/-/npm-1.0.30.tgz \
+		| tar -zxf - -C $(BUILDDIR)/build-tools --transform 's,^package/,npm/,'
 
 deps: $(DEPS_OBJECTS)
 
