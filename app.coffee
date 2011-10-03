@@ -1,7 +1,6 @@
 express = require("express")
 app = module.exports = express.createServer()
 httpProxy = require("http-proxy")
-proxy = new httpProxy.HttpProxy()
 
 # Configuration
 
@@ -41,15 +40,23 @@ app.get("/shell", (req, res) ->
   )
 )
 
+app.get("/dashboard", (req, res) ->
+  res.render("dashboard",
+    title: "dashboard",
+    style: "dashboard.css"
+  )
+)
+
 # TODO(sissel): Support SSL, perhaps take a url instead of host, port, etc?
 proxythrough = (prefix, host, port) =>
   prefix_re = new RegExp("^" + prefix)
   app.get(new RegExp("^" + prefix + "/.*"), (req, res) =>
     req.url = req.url.replace(prefix_re, "")
-    proxy.proxyRequest(req, res, host: host, port: port)
+    proxy = new httpProxy.HttpProxy(host: host, port: port)
+    proxy.proxyRequest(req, res)
   )
 
-proxythrough("/proxy/elasticsearch", "localhost", 9200)
+#proxythrough("/proxy/elasticsearch", "localhost", 9200)
 
 # TODO(sissel): Figure out how to prompt for authentication and other per
 # proxythrough configuration.
