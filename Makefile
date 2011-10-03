@@ -1,6 +1,6 @@
-FILES=$(shell find ./ -name '*.coffee' 2> /dev/null)
+COFFEE_FILES=$(shell git ls-files | grep '\.coffee$$' 2> /dev/null)
 STATIC+=views/ public/ app.js
-OBJECTS=$(addprefix $(BUILDDIR)/, $(subst .coffee,.js,$(FILES)))
+COFFEE_OBJECTS=$(addprefix $(BUILDDIR)/, $(subst .coffee,.js,$(COFFEE_FILES)))
 # TODO(sissel): put versions in the DEPS string
 DEPS=express socket.io jade coffee-script sass http-proxy
 DEPS_OBJECTS=$(addprefix $(BUILDDIR)/node_modules/, $(DEPS))
@@ -20,7 +20,7 @@ all: compile static
 $(BUILDDIR)/node_modules/coffee-script: VERSION=1.1.1
 
 clean:
-	rm -f $(OBJECTS) $(STATIC_OBJECTS)
+	rm -f $(COFFEE_OBJECTS) $(STATIC_OBJECTS)
 
 superclean:
 	rm -fr $(BUILDDIR)/
@@ -72,7 +72,7 @@ debug:
 	echo $(VERSION)
 
 static: $(STATIC_OBJECTS)
-compile: deps $(OBJECTS)
+compile: deps $(COFFEE_OBJECTS)
 
 $(BUILDDIR)/node_modules: | $(BUILDDIR)
 	$(QUIET)mkdir $@
@@ -83,10 +83,10 @@ $(BUILDDIR)/node_modules/%: | $(BUILDDIR)/node_modules $(NPM)
 	@echo "Installing $(NAME)$(VERSIONSPEC)"
 	$(QUIET)(cd $(BUILDDIR); node $(NPM) install $(NAME)$(VERSIONSPEC))
 
-$(BUILDDIR)/build-tools: $(BUILDDIR)
+$(BUILDDIR)/build-tools: | $(BUILDDIR)
 	mkdir $@
 
-$(BUILDDIR)/build-tools/npm: $(BUILDDIR)/build-tools
+$(BUILDDIR)/build-tools/npm: | $(BUILDDIR)/build-tools
 	mkdir $@
 
 npm: $(NPM)
