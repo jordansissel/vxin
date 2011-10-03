@@ -1,17 +1,11 @@
 $ = jQuery
 
-# click anywhere to hide the current dropdown
-$(window).bind("click", (e) ->
-  $('a.menu').parent("li").removeClass("open")
-)
-
-$("a.menu").click((e) ->
-  $(this).parent("li").toggleClass('open')
-  return false
-)
+$(".dropdown").dropdown()
+$(".twipsy-hoverable").twipsy()
 
 $("a.output-select.table").click((e) -> 
   console.log("Table chosen")
+  # This is a terrible hack.
   window.$$output = TableChart
 
   if window.$$widget?
@@ -22,6 +16,7 @@ $("a.output-select.table").click((e) ->
 
 $("a.output-select.tree").click((e) -> 
   console.log("tree chosen")
+  # This is a terrible hack.
   window.$$output = TreeView
   if window.$$widget?
     widget = window.$$widget
