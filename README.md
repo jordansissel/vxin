@@ -33,11 +33,11 @@ charts, all kinds of silly graphs to see how I can get the data to make sense.
 
 Example inputs: elasticsearch, websockets, graphite, ganglia, logs, etc
 
-Example filters: mapreduce, "top N", sort, etc
+Example filters: mapreduce, pig, hive, "top N", sort, etc
 
 Example outputs: pie charts, line graphs, histograms, flow charts, etc
 
-Some data comes as an unlimited stream, other is queryable and finite. We can
+Some data comes as an unbounded stream, others are queryable and finite. We can
 achieve "top N" and "sort" filtration on these streams if we are careful.
 
 "top N" could emit the top N elements every N seconds, or be queryable. The
