@@ -1,6 +1,6 @@
 # vxin
 
-vxin, pronounced "vixen," is a project aimed at doing general purpose data
+vxin is a project aimed at doing general purpose data
 visualization.
 
 The goal of this project is to solve the visual needs and experiments of
